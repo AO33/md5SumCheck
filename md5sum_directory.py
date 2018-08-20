@@ -23,11 +23,18 @@ def recurse_md5Sum(directory,fileList,excludeHidden="True"):
             if item[0] == ".":
                 continue
         #####################################
-        if os.path.isdir(directory+'/'+item):
-            fileList = recurse_md5Sum(directory+'/'+item,fileList)
+        path = directory+'/'+item
+        if os.path.isdir(path):
+            fileList = recurse_md5Sum(path,fileList)
         else:
-            md5sum = commands.getoutput('md5 -r '+directory+'/'+item+' | cut -d " " -f1')
-            fileList.append([directory+'/'+item,md5sum])
+            commandPath = directory+'/'+item
+            commandPath = commandPath.replace(" ","\ ")
+            commandPath = commandPath.replace("(","\(")
+            commandPath = commandPath.replace(")","\)")
+            commandPath = commandPath.replace("$","\$")
+            commandPath = commandPath.replace("'","\\'")
+            md5sum = commands.getoutput("md5 -r "+commandPath+" | cut -d "+'" "'+" -f1")
+            fileList.append([path,md5sum])
     ###############
     return fileList
 
